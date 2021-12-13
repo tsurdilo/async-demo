@@ -1,0 +1,67 @@
+asyncapi: 2.0.0
+info:
+  title: Banking Service
+  version: 1.0.0
+servers:
+  development:
+    url: localhost:{port}
+    protocol: kafka
+    variables:
+      port:
+        default: '9092'
+channels:
+  customer.transaction.03:
+    description: |-
+      This contains events related to transactions.
+    publish:
+      operationId: sendTransation
+      message:
+        $ref: '#/components/messages/transactionEvent'
+      bindings:
+        kafka:
+          groupId: myGroupId
+
+  customer.accountinfo.03:
+    subscribe:
+      operationId: getAccountInfo
+      message:
+        $ref: '#/components/messages/accountInfo'
+      bindings:
+        kafka:
+          groupId: myGroupId
+      
+components:  
+  messages:  
+    transactionEvent:  
+      name: trasactionEvent  
+      contentType: 'application/json'  
+      payload:  
+        $ref: '#/components/schemas/TransactionEventPayload'  
+    accountInfo:  
+      name: accountInfo  
+      contentType: 'application/json'  
+      payload:  
+        $ref: '#/components/schemas/AccountInfoPayload'  
+  schemas:  
+    TransactionEventPayload:  
+      type: object  
+      properties:  
+        transactionId:  
+          description: Transaction Id  
+          type: string  
+        customerId: 
+          description: Customer Id
+          type: string
+        amount:  
+          type: integer
+    AccountInfoPayload:  
+     type: object  
+     properties:  
+       transactionId:  
+         description: Transaction Id  
+         type: string  
+       customerId: 
+         description: Customer Id
+         type: string
+       total:  
+         type: integer
